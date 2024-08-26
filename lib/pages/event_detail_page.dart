@@ -1,5 +1,6 @@
 import 'dart:ui';
-
+import 'package:eventy/models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../constant/color.dart';
 import '../constant/text_style.dart';
@@ -10,29 +11,40 @@ import '../widgets/ui_helper.dart';
 class EventDetailPage extends StatefulWidget {
   final Event event;
   const EventDetailPage(this.event, {super.key});
+
   @override
-  // ignore: library_private_types_in_public_api
   _EventDetailPageState createState() => _EventDetailPageState();
 }
 
 class _EventDetailPageState extends State<EventDetailPage>
     with TickerProviderStateMixin {
-  late Event event = widget.event;
-  late AnimationController controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 300),
-  );
-  late AnimationController bodyScrollAnimationController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 300),
-  );
+  late Event event;
+  late AnimationController controller;
+  late AnimationController bodyScrollAnimationController;
   late ScrollController scrollController;
   late Animation<double> scale;
   late Animation<double> appBarSlide;
   double headerImageSize = 0;
   bool isFavorite = false;
+  bool joined = false;
+  String joinBtnText = 'Join';
+  Color color1 = Colors.white;
+  Color color2 = Colors.deepPurple;
   @override
   void initState() {
+    super.initState();
+    event = widget.event;
+
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    bodyScrollAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
     scrollController = ScrollController()
       ..addListener(() {
         if (scrollController.offset >= headerImageSize / 2) {
@@ -53,13 +65,62 @@ class _EventDetailPageState extends State<EventDetailPage>
       curve: Curves.linear,
       parent: controller,
     ));
-    super.initState();
+
+    _fetchJoinedStatus();
+  }
+
+  Future<void> _fetchJoinedStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      UserModel cUser = UserModel(email: user.email!, userId: user.uid);
+
+      bool status = await cUser.isJoined(event.id);
+      setState(() {
+        joined = status;
+        joinBtnText = joined ? 'Joined' : 'Join';
+        if (joined) {
+          cUser.pushEvent(event.id);
+          color1 = Colors.white;
+          color2 = Colors.deepPurple;
+        } else {
+          cUser.removeEvent(event.id);
+          color1 = Colors.deepPurple;
+          color2 = Colors.white;
+        }
+      });
+    }
+  }
+
+  Future<void> _toggleJoinStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      UserModel cUser = UserModel(email: user.email!, userId: user.uid);
+
+      if (joined) {
+        await cUser.removeEvent(event.id);
+        setState(() {
+          joined = false;
+          joinBtnText = 'Join';
+        });
+      } else {
+        await cUser.pushEvent(event.id);
+        setState(() {
+          joined = true;
+          joinBtnText = 'Joined';
+        });
+      }
+      // Toggle colors if needed
+      Color exchange = color1;
+      color1 = color2;
+      color2 = exchange;
+    }
   }
 
   @override
   void dispose() {
     controller.dispose();
     bodyScrollAnimationController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -92,7 +153,7 @@ class _EventDetailPageState extends State<EventDetailPage>
                           UIHelper.verticalSpace(24),
                           buildOrganizeInfo(),
                           UIHelper.verticalSpace(24),
-                          buildEventLocation(),
+                          // buildEventLocation(),
                           UIHelper.verticalSpace(124),
                           //...List.generate(10, (index) => ListTile(title: Text("Dummy content"))).toList(),
                         ],
@@ -195,22 +256,6 @@ class _EventDetailPageState extends State<EventDetailPage>
             ),
             if (hasTitle)
               Text(event.name, style: titleStyle.copyWith(color: Colors.white)),
-            Card(
-              shape: const CircleBorder(),
-              elevation: 0,
-              color: Theme.of(context).primaryColor,
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: () => setState(() => isFavorite = !isFavorite),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -254,24 +299,6 @@ class _EventDetailPageState extends State<EventDetailPage>
           ],
         ),
         const Spacer(),
-        Container(
-          padding: const EdgeInsets.all(2),
-          decoration: const ShapeDecoration(
-              shape: StadiumBorder(), color: primaryLight),
-          child: Row(
-            children: <Widget>[
-              UIHelper.horizontalSpace(8),
-              Text("Add To Calendar",
-                  style: subtitleStyle.copyWith(
-                      color: Theme.of(context).primaryColor)),
-              FloatingActionButton(
-                mini: true,
-                onPressed: () {},
-                child: const Icon(Icons.add),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -284,15 +311,6 @@ class _EventDetailPageState extends State<EventDetailPage>
         UIHelper.verticalSpace(),
         Text(event.description, style: subtitleStyle),
         UIHelper.verticalSpace(8),
-        InkWell(
-          child: Text(
-            "Read more...",
-            style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                decoration: TextDecoration.underline),
-          ),
-          onTap: () {},
-        ),
       ],
     );
   }
@@ -313,15 +331,6 @@ class _EventDetailPageState extends State<EventDetailPage>
           ],
         ),
         const Spacer(),
-        TextButton(
-          onPressed: () {},
-          style: TextButton.styleFrom(
-            foregroundColor: primaryLight,
-            shape: const StadiumBorder(),
-          ),
-          child: Text("Follow",
-              style: TextStyle(color: Theme.of(context).primaryColor)),
-        )
       ],
     );
   }
@@ -349,23 +358,29 @@ class _EventDetailPageState extends State<EventDetailPage>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+              children: [
                 const Text("Price", style: subtitleStyle),
                 UIHelper.verticalSpace(8),
                 RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "\$${event.price}",
-                        style: titleStyle.copyWith(
-                            color: Theme.of(context).primaryColor),
-                      ),
-                      const TextSpan(
-                        text: "/per person",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
+                  text: event.price != 0
+                      ? TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "\$${event.price}",
+                              style: titleStyle.copyWith(
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                            const TextSpan(
+                              text: "/per person",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        )
+                      : TextSpan(
+                          text: "Free",
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        ),
                 ),
               ],
             ),
@@ -373,15 +388,15 @@ class _EventDetailPageState extends State<EventDetailPage>
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: const StadiumBorder(),
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: color1,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
-              onPressed: () {},
+              onPressed: _toggleJoinStatus,
               child: Text(
-                "Get a Ticket",
+                joinBtnText,
                 style: titleStyle.copyWith(
-                    color: Colors.white, fontWeight: FontWeight.normal),
+                    color: color2, fontWeight: FontWeight.normal),
               ),
             ),
           ],

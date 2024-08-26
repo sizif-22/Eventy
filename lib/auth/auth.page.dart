@@ -1,5 +1,5 @@
-import 'package:eventy/pages/login_or_regist.dart';
-import 'package:eventy/widgets/bottom_navigation_bar.dart';
+import 'login_or_regist.dart';
+import '../widgets/bottom_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

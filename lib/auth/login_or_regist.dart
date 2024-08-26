@@ -1,5 +1,5 @@
-import 'package:eventy/pages/login.page.dart';
-import 'package:eventy/pages/register.page.dart';
+import 'login.page.dart';
+import 'register.page.dart';
 import 'package:flutter/material.dart';
 
 class LoginOrRegister extends StatefulWidget {
