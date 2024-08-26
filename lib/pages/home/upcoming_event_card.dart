@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../constant/color.dart';
-import '../constant/text_style.dart';
-import '../models/event_model.dart';
-import '../utils/datetime_utils.dart';
-import '../widgets/ui_helper.dart';
+import '../../constant/color.dart';
+import '../../constant/text_style.dart';
+import '../../models/event_model.dart';
+import '../../utils/datetime_utils.dart';
+import '../../widgets/ui_helper.dart';
 
 class UpComingEventCard extends StatelessWidget {
   final Event event;

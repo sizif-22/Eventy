@@ -1,25 +1,22 @@
-import 'package:eventy/auth/sighInWithGoogleBTN.dart';
+import 'sighInWithGoogleBTN.dart';
 import 'package:flutter/material.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class RegisterPage extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   final Function()? witchOne;
-  RegisterPage({super.key, required this.witchOne});
-  // static const registerRoute = '/registerPage';
-
+  LoginPage({super.key, required this.witchOne});
+  // static const loginRoute = '/loginPage';
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _LoginPageState extends State<LoginPage> {
   // text editing controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
   bool error = false;
-
   // final _auth = FirebaseAuth.instance;
   void signUserIn() async {
     showDialog(
@@ -28,23 +25,21 @@ class _RegisterPageState extends State<RegisterPage> {
               child: CircularProgressIndicator(),
             ));
     try {
-      if (passwordController.text == confirmPasswordController.text) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
-        );
-      } else {
-        setState(() {
-          error = true;
-        });
-      }
-      // Navigator.pop(context);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
       print(e);
       // Alert ↓↓
       // somethingwentWrong();
+
+      setState(() {
+        error = true;
+      });
     }
-    Navigator.pop(context);
   }
 
   @override
@@ -106,12 +101,21 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
+
                 const SizedBox(height: 10),
-                MyTextField(
-                  isEmail: false,
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
+
+                // forgot password?
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 25),
@@ -119,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 // sign in button
                 MyButton(
                   onTap: signUserIn,
-                  btnText: "Sign Up",
+                  btnText: 'Sign In',
                 ),
 
                 const SizedBox(height: 50),
@@ -167,21 +171,21 @@ class _RegisterPageState extends State<RegisterPage> {
                   ],
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
 
                 // not a member? register now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account?',
+                      'Not a member?',
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: widget.witchOne,
                       child: const Text(
-                        'login now',
+                        'Register now',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,

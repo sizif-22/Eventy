@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import '../constant/color.dart';
-import '../constant/text_style.dart';
-import '../models/event_model.dart';
-import '../utils/datetime_utils.dart';
-import '../widgets/ui_helper.dart';
+import '../../constant/color.dart';
+import '../../constant/text_style.dart';
+import '../../models/event_model.dart';
+import '../../utils/datetime_utils.dart';
+import '../../widgets/ui_helper.dart';
 
 class NearbyEventCard extends StatelessWidget {
   final Event event;
   final VoidCallback onTap;
-  const NearbyEventCard({Key? key, required this.event, required this.onTap}) : super(key: key);
+  const NearbyEventCard({Key? key, required this.event, required this.onTap})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -56,7 +57,8 @@ class NearbyEventCard extends StatelessWidget {
           UIHelper.verticalSpace(8),
           Row(
             children: <Widget>[
-              Icon(Icons.location_on, size: 16, color: Theme.of(context).primaryColor),
+              Icon(Icons.location_on,
+                  size: 16, color: Theme.of(context).primaryColor),
               UIHelper.horizontalSpace(4),
               Text(event.location.toUpperCase(), style: subtitleStyle),
             ],

@@ -1,6 +1,6 @@
 import 'package:eventy/pages/account.page.dart';
-import 'package:eventy/pages/auth.page.dart';
-import 'package:eventy/pages/home_page.dart';
+import 'auth/auth.page.dart';
+import 'package:eventy/pages/home/home_page.dart';
 import 'package:eventy/pages/qrcode.page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +23,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         // home: const AuthPage(),
         initialRoute: '/',
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+        ),
         routes: {
           '/': (ctx) => const AuthPage(),
           AccountPage.accountPageRoute: (ctx) => const AccountPage(),

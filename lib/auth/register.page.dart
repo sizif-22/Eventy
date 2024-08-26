@@ -1,22 +1,27 @@
-import 'package:eventy/auth/sighInWithGoogleBTN.dart';
+import 'sighInWithGoogleBTN.dart';
 import 'package:flutter/material.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../models/user.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   final Function()? witchOne;
-  LoginPage({super.key, required this.witchOne});
-  // static const loginRoute = '/loginPage';
+  RegisterPage({super.key, required this.witchOne});
+  // static const registerRoute = '/registerPage';
+
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   // text editing controllers
+  final fullnameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   bool error = false;
+
   // final _auth = FirebaseAuth.instance;
   void signUserIn() async {
     showDialog(
@@ -25,21 +30,30 @@ class _LoginPageState extends State<LoginPage> {
               child: CircularProgressIndicator(),
             ));
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      Navigator.pop(context);
+      if (passwordController.text == confirmPasswordController.text) {
+        final firebaseUser =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        final userId = firebaseUser.user?.uid;
+        UserModel user = new UserModel(
+            email: emailController.text, fullName: fullnameController.text,userId: userId);
+        if (userId != null) {
+          user.addUser();
+        }
+      } else {
+        setState(() {
+          error = true;
+        });
+      }
+      // Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
       print(e);
       // Alert ↓↓
       // somethingwentWrong();
-
-      setState(() {
-        error = true;
-      });
     }
+    Navigator.pop(context);
   }
 
   @override
@@ -58,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 Center(
                   child: Text(
-                    'Welcome back you\'ve been missed!',
+                    'hi there',
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontSize: 16,
@@ -87,6 +101,13 @@ class _LoginPageState extends State<LoginPage> {
                 // email textfield
                 MyTextField(
                   isEmail: true,
+                  hintText: 'Full Name',
+                  controller: fullnameController,
+                  obscureText: false,
+                ),
+                const SizedBox(height: 10),
+                MyTextField(
+                  isEmail: true,
                   hintText: 'Email',
                   controller: emailController,
                   obscureText: false,
@@ -101,21 +122,12 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
-
                 const SizedBox(height: 10),
-
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
+                MyTextField(
+                  isEmail: false,
+                  controller: confirmPasswordController,
+                  hintText: 'Confirm Password',
+                  obscureText: true,
                 ),
 
                 const SizedBox(height: 25),
@@ -123,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                 // sign in button
                 MyButton(
                   onTap: signUserIn,
-                  btnText: 'Sign In',
+                  btnText: "Sign Up",
                 ),
 
                 const SizedBox(height: 50),
@@ -171,21 +183,21 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
 
                 // not a member? register now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Not a member?',
+                      'Already have an account?',
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: widget.witchOne,
                       child: const Text(
-                        'Register now',
+                        'login now',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,

@@ -1,7 +1,6 @@
 import 'package:eventy/pages/account.page.dart';
-import 'package:eventy/pages/home_page.dart';
+import 'package:eventy/pages/home/home_page.dart';
 import 'package:eventy/pages/qrcode.page.dart';
-import 'package:eventy/widgets/drawer.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -36,14 +35,14 @@ class _HomePageButtonNavigationBarState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const DrawerWidget(),
+      // drawer: const DrawerWidget(),
       body: _screens[_selectedSreenIndex]['screen'] as Widget,
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectScreen,
-        selectedItemColor: Theme.of(context).secondaryHeaderColor,
-        unselectedItemColor: Colors.white,
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: const Color(0xff737373),
         currentIndex: _selectedSreenIndex,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: const Color(0xfffafafa),
         items: const [
           BottomNavigationBarItem(
             label: "Explore",
