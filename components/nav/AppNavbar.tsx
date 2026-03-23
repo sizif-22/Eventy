@@ -16,7 +16,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-export const AppNavbar = () => {
+import Image from 'next/image';
+
+export const AppNavbar = ({ logoImage, eventName }: { logoImage?: string; eventName?: string }) => {
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -25,12 +27,26 @@ export const AppNavbar = () => {
       <div className="h-full max-w-7xl mx-auto flex items-center justify-between">
         {/* Left: Logo */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="font-cinzel text-sm tracking-[0.15em] text-foreground">
-            EVNETY
+          <Link href="/" className="flex items-center gap-3 group">
+            {logoImage ? (
+              <div className="relative h-6 w-24">
+                <Image 
+                  src={logoImage} 
+                  alt={eventName || "Event Logo"} 
+                  fill 
+                  className="object-contain object-left grayscale group-hover:grayscale-0 transition-all brightness-150"
+                  unoptimized
+                />
+              </div>
+            ) : (
+              <span className="font-cinzel text-sm tracking-[0.15em] text-foreground uppercase">
+                {eventName || "EVNETY"}
+              </span>
+            )}
           </Link>
 
           {/* Nav Links (Desktop) */}
-          <div className="hidden md:flex items-center gap-6">
+          {/* <div className="hidden md:flex items-center gap-6">
             {['Console', 'Docs', 'Settings'].map((link) => (
               <Link
                 key={link}
@@ -40,7 +56,7 @@ export const AppNavbar = () => {
                 {link}
               </Link>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* Right: User Profile & Mobile Toggle */}
@@ -48,9 +64,9 @@ export const AppNavbar = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 outline-none group cursor-pointer">
-                <Avatar className="h-8 w-8 border border-secondary/20 transition-colors group-hover:border-secondary/40">
-                  <AvatarImage src={user.profilePictureUrl || ''} />
-                  <AvatarFallback className="bg-background-2 text-secondary text-[10px]">
+                <Avatar className="h-8 w-8 border border-secondary/20 transition-colors group-hover:border-secondary/40 rounded-xl">
+                  <AvatarImage src={user.profilePictureUrl || ''} className='rounded-xl' />
+                  <AvatarFallback className="bg-background-2 text-secondary text-[10px] rounded-xl">
                     {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
@@ -66,24 +82,26 @@ export const AppNavbar = () => {
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-secondary/10" />
-                
-                <Link href="/console">
+
+                <Link href="/">
                   <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
+                    <span>Home</span>
                   </DropdownMenuItem>
                 </Link>
-                
-                <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
-                  <UserIcon className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
+
+                {/* <Link href="/account">
+                  <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
+                    <UserIcon className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                </Link> */}
+
+                {/* <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
-                </DropdownMenuItem>
-                
+                </DropdownMenuItem> */}
+
                 <DropdownMenuSeparator className="bg-secondary/10" />
                 <Link href="/sign-out">
                   <DropdownMenuItem className="hover:bg-red-400/10 cursor-pointer text-red-400 focus:bg-red-400/10 focus:text-red-400">

@@ -48,7 +48,7 @@ export const Navbar = () => {
         </Link>
 
         {/* Center: Nav Links */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* <div className="hidden md:flex items-center gap-8">
           {['Home', 'Features', 'Pricing'].map((link) => (
             <Link
               key={link}
@@ -58,23 +58,23 @@ export const Navbar = () => {
               {link}
             </Link>
           ))}
-        </div>
+        </div> */}
 
         {/* Right: Buttons or User Profile */}
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-4">
-              <Link
+              {/* <Link
                 href="/console"
                 className="bg-foreground text-background font-inter text-[13px] px-5 py-2 rounded-sm hover:bg-foreground/90 transition-colors"
               >
                 Go to Console
-              </Link>
+              </Link> */}
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none">
-                  <Avatar className="h-9 w-9 border border-secondary/20">
-                    <AvatarImage src={user.profilePictureUrl || undefined} />
-                    <AvatarFallback className="bg-background-2 text-foreground text-xs">
+                  <Avatar className="h-9 w-9 rounded-xl  border border-secondary/20">
+                    <AvatarImage src={user.profilePictureUrl || undefined} className='rounded-xl' />
+                    <AvatarFallback className="bg-background-2 text-foreground text-xs rounded-xl">
                       {user.firstName?.charAt(0)}
                       {user.lastName?.charAt(0)}
                     </AvatarFallback>
@@ -91,14 +91,18 @@ export const Navbar = () => {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator className="bg-secondary/10" />
 
-                  <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
+                  {/* <Link href="/account">
+                    <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                  </Link> */}
+                  <Link href="/console">
+                    <DropdownMenuItem className="hover:bg-secondary/5 cursor-pointer focus:bg-secondary/5 focus:text-foreground">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Console</span>
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator className="bg-secondary/10" />
                   <Link href="/sign-out">
                     <DropdownMenuItem className="hover:bg-red-400/10 cursor-pointer text-red-400 focus:bg-red-400/10 focus:text-red-400">

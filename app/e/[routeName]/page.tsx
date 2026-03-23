@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { PublicEventPage } from '@/components/editor/PublicEventPage';
 import { useEventStore } from '@/store/eventStore';
@@ -11,6 +11,16 @@ export default function EventPage({ params }: { params: Promise<{ routeName: str
   const { routeName } = React.use(params);
   const event = useQuery(api.events.getEventByRoute, { routeName });
   const { setContent, setColors, setDate, setTime, setLocation, setForm } = useEventStore();
+
+  const incrementViews = useMutation(api.events.incrementViews);
+  const incrementedRef = React.useRef(false);
+
+  useEffect(() => {
+    if (event && !incrementedRef.current) {
+      incrementViews({ eventId: event._id });
+      incrementedRef.current = true;
+    }
+  }, [event, incrementViews]);
 
   useEffect(() => {
     if (event) {

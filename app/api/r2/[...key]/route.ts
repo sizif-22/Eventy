@@ -27,10 +27,10 @@ export async function GET(
             return NextResponse.json({ error: 'Not found' }, { status: 404 });
         }
 
-        const bytes = await response.Body.transformToByteArray();
-        console.log('R2 Proxy: Sending image', key, 'bytes:', bytes.length);
+        const stream = response.Body.transformToWebStream();
+        console.log('R2 Proxy: Sending image stream', key);
 
-        return new NextResponse(bytes, {
+        return new NextResponse(stream, {
             headers: {
                 'Content-Type': response.ContentType || 'image/jpeg',
                 'Cache-Control': 'public, max-age=31536000, immutable',

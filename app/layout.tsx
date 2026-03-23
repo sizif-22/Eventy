@@ -5,7 +5,7 @@ import { ConvexClientProvider } from '@/components/ConvexClientProvider';
 import { withAuth } from '@workos-inc/authkit-nextjs';
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const cinzel = Cinzel({
   subsets: ['latin'],
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   title: 'EVNETY — Premium Event Platform',
   description: 'Create and share your event website effortlessly.',
   icons: {
-    icon: '/convex.svg',
+    icon: '/Eventy.ico',
   },
 };
 

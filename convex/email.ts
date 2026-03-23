@@ -196,6 +196,76 @@ export const sendRsvpEmail = action({
   },
 });
 
+export const sendBroadcastEmail = action({
+  args: {
+    eventId: v.id('events'),
+    subject: v.string(),
+    body: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const data = await ctx.runQuery(internal.email.getEventEmails, {
+      eventId: args.eventId,
+    });
+
+    if (!data || data.emails.length === 0) {
+      console.log('No recipients found for broadcast');
+      return;
+    }
+
+    const { emails, eventName } = data;
+    const url = process.env.ZOHO_ZEPTOMAIL_URL!;
+    const token = process.env.ZOHO_ZEPTOMAIL_TOKEN!;
+    const fromEmail = process.env.ZOHO_SENDER_EMAIL!;
+
+    const htmlBody = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: sans-serif; background-color: #0D0D0D; color: #E8E4DC; padding: 40px; }
+            .content { max-width: 600px; margin: 0 auto; line-height: 1.6; }
+            .header { font-family: serif; font-style: italic; font-size: 24px; margin-bottom: 20px; }
+            .footer { margin-top: 40px; font-size: 12px; opacity: 0.5; }
+          </style>
+        </head>
+        <body>
+          <div class="content">
+            <div class="header">${eventName}</div>
+            <div>${args.body.replace(/\n/g, '<br/>')}</div>
+            <div class="footer">Sent via EVNETY — The Digital Curator</div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Process in batches of 50 to avoid timeouts/rate limits if needed, 
+    // but for now we do one batch if possible or a loop.
+    // ZeptoMail allows multiple recipients in one call.
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      },
+      body: JSON.stringify({
+        from: { address: fromEmail, name: eventName },
+        to: emails.map(email => ({ email_address: { address: email } })),
+        subject: args.subject,
+        htmlbody: htmlBody,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Broadcast failed: ${error}`);
+    }
+
+    console.log(`Broadcast sent to ${emails.length} recipients`);
+  },
+});
+
 export const getSubmissionData = internalQuery({
   args: { submissionId: v.id('submissions') },
   handler: async (ctx, args) => {
@@ -203,5 +273,27 @@ export const getSubmissionData = internalQuery({
     if (!submission) return null;
     const event = await ctx.db.get(submission.eventId);
     return { ...submission, event };
+  },
+});
+
+export const getEventEmails = internalQuery({
+  args: { eventId: v.id('events') },
+  handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    if (!event) return null;
+
+    const submissions = await ctx.db
+      .query("submissions")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .collect();
+
+    const emails = submissions
+      .map(s => s.answers.email)
+      .filter(Boolean);
+
+    return {
+      emails,
+      eventName: event.content?.eventName || event.routeName
+    };
   },
 });

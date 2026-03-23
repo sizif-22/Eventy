@@ -98,10 +98,10 @@ export const PublicEventPage = ({
         isMobile ? "p-6 min-h-[60vh]" : "p-8 md:p-20 md:min-h-screen"
       )}>
         <div className={cn(
-          "absolute font-cinzel text-sm tracking-[0.2em] z-20 uppercase",
+          "absolute z-20",
           isMobile ? "top-8 left-6" : "top-8 left-8 md:top-12 md:left-12"
         )}>
-          {content.eventName}
+          <span className="font-cinzel text-sm tracking-[0.2em] uppercase">{content.eventName}</span>
         </div>
         
         {isMobile ? (

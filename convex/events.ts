@@ -64,6 +64,7 @@ export const submitRsvp = mutation({
     const submissionId = await ctx.db.insert("submissions", {
       eventId: args.eventId,
       answers: args.answers,
+      status: "PENDING",
     });
 
     // Schedule the confirmation email
@@ -72,5 +73,81 @@ export const submitRsvp = mutation({
     });
 
     return submissionId;
+  },
+});
+export const getUserEvents = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+
+    return await ctx.db
+      .query("events")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+  },
+});
+
+export const getEventById = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.eventId);
+  },
+});
+
+export const getEventSubmissions = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("submissions")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .collect();
+  },
+});
+
+export const getEventStats = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    const submissions = await ctx.db
+      .query("submissions")
+      .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+      .collect();
+
+    const rsvps = submissions.length;
+    const checkIns = submissions.filter((s) => s.status === "CHECKED_IN").length;
+
+    return {
+      views: event?.totalViews ?? 0,
+      rsvps,
+      checkIns,
+      capacity: 100, // Default capacity for now
+    };
+  },
+});
+
+export const incrementViews = mutation({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    if (event) {
+      await ctx.db.patch(args.eventId, {
+        totalViews: (event.totalViews ?? 0) + 1,
+      });
+    }
+  },
+});
+
+export const updateSubmissionStatus = mutation({
+  args: { 
+    submissionId: v.id("submissions"),
+    status: v.string() 
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.submissionId, {
+      status: args.status,
+    });
   },
 });

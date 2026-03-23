@@ -49,14 +49,14 @@ export default function LandingPage() {
             src="/hero-event.png"
             alt="Atmospheric Event Venue"
             fill
-            className="object-cover brightness-75"
+            className="object-cover brightness-[0.55] transition-all duration-1000"
             priority
           />
           {/* Hero Overlays */}
           <div
             className="absolute inset-0 z-10"
             style={{
-              background: 'linear-gradient(to top, #0D0D0D 0%, #0D0D0D 15%, transparent 60%, rgba(13, 13, 13, 0.5) 100%)',
+              background: 'linear-gradient(to bottom, rgba(13, 13, 13, 0.8) 0%, rgba(13, 13, 13, 0.4) 50%, #0D0D0D 100%)',
             }}
           />
         </motion.div>

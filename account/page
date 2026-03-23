@@ -1,0 +1,54 @@
+'use client';
+
+import React from 'react';
+import { motion } from 'framer-motion';
+import { AppNavbar } from '@/components/nav/AppNavbar';
+import { IdentitySection } from '@/components/account/IdentitySection';
+import { PlanSection } from '@/components/account/PlanSection';
+import { SecuritySection } from '@/components/account/SecuritySection';
+import { DangerZoneSection } from '@/components/account/DangerZoneSection';
+
+export default function ProfilePage() {
+  return (
+    <div className="min-h-screen bg-[#0D0D0D] flex flex-col">
+      <AppNavbar />
+
+      <main className="flex-1 max-w-[860px] mx-auto w-full px-6 pt-32 pb-24 space-y-20">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="space-y-4"
+        >
+          <span className="font-inter text-[11px] uppercase tracking-[0.2em] text-[#6B6B6B]">Account</span>
+          <h1 className="font-newsreader italic text-5xl md:text-6xl text-[#E8E4DC]">Your Profile</h1>
+          <div className="h-px bg-[#6B6B6B]/15 mt-10" />
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+          className="space-y-20"
+        >
+          <IdentitySection />
+          <PlanSection />
+          <SecuritySection />
+          <DangerZoneSection />
+        </motion.div>
+
+        <footer className="mt-32 pt-8 border-t border-[#6B6B6B]/15 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <span className="font-cinzel text-[10px] tracking-widest text-[#E8E4DC]">EVNETY</span>
+            <span className="font-inter text-[11px] text-[#6B6B6B]">© 2025 Evnety</span>
+          </div>
+          <div className="flex items-center gap-6 font-inter text-[11px] text-[#6B6B6B]">
+            <a href="#" className="hover:text-[#E8E4DC] transition-colors">Privacy</a>
+            <a href="#" className="hover:text-[#E8E4DC] transition-colors">Terms</a>
+            <a href="#" className="hover:text-[#E8E4DC] transition-colors">Contact</a>
+          </div>
+        </footer>
+      </main>
+    </div>
+  );
+}
