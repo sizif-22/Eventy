@@ -37,6 +37,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { Toaster } from "@/components/ui/sonner";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -44,13 +46,22 @@ export default async function RootLayout({
 }>) {
   const { accessToken } = await withAuth();
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
       <body
-        className={`${cinzel.variable} ${newsreader.variable} ${notoSerif.variable} ${inter.variable} font-inter antialiased bg-background text-foreground`}
+        className={cn(
+          cinzel.variable,
+          newsreader.variable,
+          notoSerif.variable,
+          inter.variable,
+          "font-inter antialiased bg-background text-foreground"
+        )}
       >
         <ConvexClientProvider expectAuth={!!accessToken}>{children}</ConvexClientProvider>
+        <Toaster closeButton position="top-center" expand={false} />
       </body>
     </html>
+
+
   );
 }
 

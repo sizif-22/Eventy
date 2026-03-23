@@ -8,9 +8,13 @@ import { Navbar } from '@/components/nav/Navbar';
 import { Footer } from '@/components/nav/Footer';
 import { FeatureCard } from '@/components/cards/FeatureCard';
 import { PricingCard } from '@/components/cards/PricingCard';
+import { useAuth } from '@workos-inc/authkit-nextjs/components';
+import Link from 'next/link';
 
 export default function LandingPage() {
+  const { user } = useAuth();
   const heroRef = useRef(null);
+
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -95,17 +99,33 @@ export default function LandingPage() {
               Build a custom event website, share it with anyone, and manage everything in one place.
             </p>
             <div className="mt-4 flex flex-col items-center gap-3">
-              <button className="bg-[#E8E4DC] text-background font-inter text-sm px-8 py-3.5 rounded-sm hover:bg-[#d4d0c8] transition-all flex items-center gap-2 group">
-                Get Started <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-              <span className="font-inter text-[11px] text-secondary">No credit card required</span>
+              {user ? (
+                <Link
+                  href="/console"
+                  className="bg-[#E8E4DC] text-background font-inter text-sm px-8 py-3.5 rounded-sm hover:bg-[#d4d0c8] transition-all flex items-center gap-2 group"
+                >
+                  Go to Console <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              ) : (
+                <a
+                  href="/sign-up"
+                  className="bg-[#E8E4DC] text-background font-inter text-sm px-8 py-3.5 rounded-sm hover:bg-[#d4d0c8] transition-all flex items-center gap-2 group"
+                >
+                  Get Started <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </a>
+              )}
+              <span className="font-inter text-[11px] text-secondary">
+                {user ? `Welcome back, ${user.firstName}` : 'No credit card required'}
+              </span>
             </div>
+
           </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-32 px-6">
+      <section id="features" className="py-32 px-6 bg-background">
+
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-8 mb-4">
             <div className="h-px flex-1 bg-secondary/20" />

@@ -1,12 +1,21 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
-// The schema is entirely optional.
-// You can delete this file (schema.ts) and the
-// app will continue to work.
-// The schema provides more precise TypeScript types.
 export default defineSchema({
-  numbers: defineTable({
-    value: v.number(),
-  }),
+  events: defineTable({
+    routeName: v.string(),
+    userId: v.string(),
+    date: v.string(),
+    time: v.string(),
+    location: v.string(),
+    colors: v.any(),
+    content: v.any(),
+    form: v.any(),
+  }).index("by_route", ["routeName"])
+    .index("by_user", ["userId"]),
+  
+  submissions: defineTable({
+    eventId: v.id("events"),
+    answers: v.any(),
+  }).index("by_event", ["eventId"]),
 });

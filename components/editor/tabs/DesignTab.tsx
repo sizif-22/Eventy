@@ -8,7 +8,7 @@ export const DesignTab = () => {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div>
-        <label className="font-inter text-[10px] uppercase tracking-[0.15em] text-[#6B6B6B] mb-6 block">
+        <label className="font-inter text-[10px] uppercase tracking-[0.15em] text-secondary mb-6 block">
           THEME COLORS
         </label>
         
@@ -33,11 +33,22 @@ export const DesignTab = () => {
             value={colors.text}
             onChange={(val) => setColors({ text: val })}
           />
+          <ColorPickerItem
+            label="Background"
+            value={colors.background}
+            onChange={(val) => setColors({ background: val })}
+          />
+          <ColorPickerItem
+            label="Form BG"
+            value={colors.formBackground}
+            onChange={(val) => setColors({ formBackground: val })}
+          />
         </div>
+
       </div>
 
-      <div className="p-4 bg-[#6B6B6B]/5 border border-[#6B6B6B]/15 rounded-sm">
-        <p className="font-inter text-[11px] text-[#6B6B6B] leading-relaxed">
+      <div className="p-4 bg-secondary/5 border border-secondary/15 rounded-sm">
+        <p className="font-inter text-[11px] text-secondary leading-relaxed">
           Tip: Use high-contrast colors for primary and text to maintain readability on dark backgrounds.
         </p>
       </div>
