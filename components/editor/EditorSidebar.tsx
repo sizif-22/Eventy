@@ -40,7 +40,7 @@ export const EditorSidebar = () => {
 
     try {
       setIsCreating(true);
-      
+
       let finalHeroUrl = content.heroImage;
       let finalFeatureUrl = content.featureImage;
 
@@ -103,6 +103,8 @@ export const EditorSidebar = () => {
         }
       });
 
+      router.push(`/console`);
+
     } catch (error: any) {
       console.error('Create Event Error:', error);
       toast.error("Publication Failed", {
@@ -119,7 +121,7 @@ export const EditorSidebar = () => {
       <div className="h-14 border-b border-secondary/15 px-6 flex items-center justify-between shrink-0">
 
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={() => setIsEditorSidebarOpen(false)}
             className="md:hidden p-1 -ml-1 text-secondary hover:text-foreground transition-colors"
           >
@@ -168,7 +170,7 @@ export const EditorSidebar = () => {
 
       {/* Sidebar Footer */}
       <div className="p-6 border-t border-secondary/15 shrink-0 bg-background-2">
-        <button 
+        <button
           onClick={handleCreateEvent}
           disabled={isCreating}
           className="w-full bg-foreground text-background font-inter font-bold text-[11px] uppercase tracking-widest py-4 rounded-sm hover:bg-foreground/90 disabled:opacity-50 transition-all mb-4 cursor-pointer flex items-center justify-center gap-3"
